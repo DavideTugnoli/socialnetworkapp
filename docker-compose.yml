@@ -1,0 +1,21 @@
+version: "3"
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - '27017:27017'
+  app:
+    container_name: app
+    build: .
+    command: sh -c "if [ \"${POPULATE_DB}\" = true ]; then node /usr/src/app/dbscript.js; fi && nodemon --watch /usr/src/app -e js app.js"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/usr/src/app
+      # Anonymous volume:
+      - /usr/src/app/node_modules
+    links:
+      - "mongo:mongosrv"
